@@ -6,6 +6,9 @@ import pexpect
 
 SOCK_PATH="/tmp/tmp-gpio.sock"
 GPIO_RANGE=[0x3f200000, 0x3f200fff]
+# 000000003f204000-000000003f204017
+SPI_RANGE=[0x3f204000, 0x3f204017]
+I2C_RANGE=[0x3f205000, 0x3f205023]
 IC_RANGE  =[0x3f00b200, 0x3f00b3ff]
 
 GPIO_SET_OFFSET=0x1c
@@ -52,7 +55,12 @@ class VGPIOManager(object):
         v = self.read(GPIO_RANGE[0], 0x1000)
         return v
 
-
+    def read_entire_spi_area(self):
+        v = self.read(SPI_RANGE[0], 0x18)
+        return v
+    def read_entire_i2c_area(self):
+        v = self.read(I2C_RANGE[0], 0x24)
+        return v
     def close(self):
         self.fd.close()
 
@@ -63,7 +71,9 @@ class VGPIOManager(object):
         s += "    get <gpionum>            -- read a specific gpio\n"
         s += "    set <gpionum> <value>    -- Set a gpio to a specific value\n"
         s += "    toggle <gpionum>         -- change the value of the gpio\n"
-        s += "    read-area                -- read entire gpio area\n"
+        s += "    read-area-gpio           -- read entire gpio area\n"
+        s += "    read-area-spi            -- read entire gpio area\n"
+        s += "    read-area-i2c            -- read entire gpio area\n"
         s += "    read-ic                  -- read entire interrupt controller area\n"
         s += "    readl <address>          -- read 32 bit from address\n"
         s += "    writel <address> <value> -- read 32 bit from address\n"
@@ -115,8 +125,12 @@ class VGPIOManager(object):
             if len(s) < 3:
                 return "Error: set requires 2 arguments"
             return self.set(int(s[1], 0), int(s[2], 0))
-        elif c == 'read-area':
+        elif c == 'read-area-gpio':
             return self.read_entire_gpio_area()
+        elif c == 'read-area-spi':
+            return self.read_entire_spi_area()
+        elif c == 'read-area-i2c':
+            return self.read_entire_i2c_area()
         elif c == 'read-ic':
             return self.read_ic_area()
         elif c == 'readl':
