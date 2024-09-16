@@ -72,8 +72,8 @@ class VGPIOManager(object):
         s += "    set <gpionum> <value>    -- Set a gpio to a specific value\n"
         s += "    toggle <gpionum>         -- change the value of the gpio\n"
         s += "    read-area-gpio           -- read entire gpio area\n"
-        s += "    read-area-spi            -- read entire gpio area\n"
-        s += "    read-area-i2c            -- read entire gpio area\n"
+        s += "    read-area-spi            -- read entire spi area\n"
+        s += "    read-area-i2c            -- read entire i2c area\n"
         s += "    read-ic                  -- read entire interrupt controller area\n"
         s += "    readl <address>          -- read 32 bit from address\n"
         s += "    writel <address> <value> -- read 32 bit from address\n"
@@ -88,7 +88,7 @@ class VGPIOManager(object):
     def get_gpio_location(self, num):
         if num > 54 or num < 0:
             return 0
-        return GPIO_RANGE[0] + int(num / 32)
+        return GPIO_RANGE[0] + int(num / 32) * 4
 
     def set(self, gpionum, value):
         m = self.get_gpio_location(gpionum)
